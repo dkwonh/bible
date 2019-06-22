@@ -1,6 +1,7 @@
 package com.example.bible
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.view.GravityCompat
@@ -11,9 +12,14 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.widget.TextView
+import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private val parser = Parser()
+    private val dbHelper = DBHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +39,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
+        var t = findViewById<TextView>(R.id.testView)
+        t.movementMethod = ScrollingMovementMethod()
         navView.setNavigationItemSelectedListener(this)
+        //parser.htmlParser(this)
+    }
+
+    private fun textUpdate(str : String){
+        var textView = findViewById<TextView>(R.id.testView).apply{text = str}
+
     }
 
     override fun onBackPressed() {
@@ -66,13 +79,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                // Handle the camera action
+                textUpdate(dbHelper.getContents(1001005))
             }
             R.id.nav_gallery -> {
-
             }
             R.id.nav_slideshow -> {
-
             }
             R.id.nav_tools -> {
 
