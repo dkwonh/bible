@@ -15,20 +15,19 @@ class Parser {
         val list = partName.replace("""\s\s\s""".toRegex(), "-").split("-")
         Thread(Runnable {
             try {
-                var id = 66001000
+                var id = 1001000
                 val tmp = Jsoup.connect("$html/gen.1").get().select("div.p > span")[1].text()
                 for (i in list) {
                     var num = 1
                     println("$html/$i.$num")
                     while (id<67000000) {
-                        val doc = Jsoup.connect("$html/rev.$num").get()
+                        val doc = Jsoup.connect("$html/$i.$num").get()
                         val links = doc.select("div.p > span")
                         if( tmp == links[1].text() && num>1) break
                         for (j in links) {
                             try {
                                 j.text()[0]
                                 id++
-                                //println(" :: $id, ${j.text().replace("""[0-9]""".toRegex(), "")}")
                                 dbHelper.addContents(id, j.text().replace("""[0-9]""".toRegex(), ""))
                             } catch (e: IndexOutOfBoundsException) {
                                 e.printStackTrace()
