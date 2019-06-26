@@ -1,26 +1,35 @@
 package com.example.bible
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.doOnPreDraw
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    lateinit var lineText : TextView
+    lateinit var recyclerView: RecyclerView
     private val dbHelper = DBHelper(this)
-    lateinit var textWrapper : ScrollView
+    var selectedLine = SparseArray<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.line_page_main)
+
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -29,25 +38,25 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+
+        recyclerView = findViewById(R.id.line_recycler)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
-        lineText = findViewById(R.id.testView)
-        textWrapper = findViewById(R.id.textWrapper)
-
-        lineText.text = dbHelper.getContents(intent.getIntExtra("Num",1001001))
-        val lineString = dbHelper.getContent(intent.getIntExtra("lineNum", 1001001))
-
-        val fullText = lineText.text.toString()
-        val indexOfLine = fullText.indexOf(lineString)
-
-        lineText.onPreDraw()
-
-       Log.v("TAGGGGGG","$lineText.layout.getLineForOffset(indexOfLine)")
-
-        //textWrapper.scrollTo(0, lineText.layout.getLineTop(lineNum))
+        val text = dbHelper.getContents(intent.getIntExtra("Num",1001001))
+        val line = intent.getIntExtra("lineNum",1)%1000
 
         navView.setNavigationItemSelectedListener(this)
+
+        val lineAdapter = LineAdapter(this,text)
+
+        selectedLine = lineAdapter.selected
+
+        recyclerView.adapter = lineAdapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+
+        recyclerView.scrollToPosition(line-1)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -63,6 +72,8 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+
+
         }
     }
 
@@ -70,7 +81,7 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                Log.v("lineTextLayout","${lineText.layout})")
+                Toast.makeText(this,"$selectedLine",Toast.LENGTH_SHORT).show()
             }
             R.id.nav_gallery -> {
 

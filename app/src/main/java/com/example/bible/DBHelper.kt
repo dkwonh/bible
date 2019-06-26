@@ -30,18 +30,17 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         db.insert("BIBLE", null, values)
     }
 
-    fun getContents(pageid : Int) : String {
+    fun getContents(pageid : Int) : ArrayList<String> {
         val db = this.readableDatabase
         val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id BETWEEN $pageid AND $pageid+1000"
 
         val cursor : Cursor = db.rawQuery(selectSQL, null)
-        var contents = ""
+        val contents = arrayListOf<String>()
         var lineNum = 1
         while(cursor.moveToNext()){
-            contents += "$lineNum. ${cursor.getString(0)}\n\n"
+            contents.add("\n$lineNum. ${cursor.getString(0)}\n")
             lineNum++
         }
-        contents += "\n\n"
         cursor.close()
         db.close()
         return contents

@@ -1,8 +1,10 @@
 package com.example.bible
 
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import org.jsoup.Jsoup
 import java.io.IOException
+import java.sql.SQLDataException
 
 //성경을 파싱하는 클래스 최초한번만 실행한다
 class Parser {
@@ -20,10 +22,10 @@ class Parser {
                 for (i in list) {
                     var num = 1
                     println("$html/$i.$num")
-                    while (id<67000000) {
+                    while (id < 67000000) {
                         val doc = Jsoup.connect("$html/$i.$num").get()
                         val links = doc.select("div.p > span")
-                        if( tmp == links[1].text() && num>1) break
+                        if (tmp == links[1].text() && num > 1) break
                         for (j in links) {
                             try {
                                 j.text()[0]

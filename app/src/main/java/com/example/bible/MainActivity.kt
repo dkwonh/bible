@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var menuList = arrayListOf<String>()
     private var menuListNew = arrayListOf<String>()
     private var depth = 0
+    private var currentTitle = "신약 성경"
     //구약 39 신약 27
     private var koPartName = """창세기 (창세,창)
 출애굽기/탈출기 (탈출,출)
@@ -112,20 +114,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             when (currentList[0] == "창세기 ") {
                 true -> {
                     currentList.clear()
                     currentList.addAll(menuListNew)
+                    currentTitle = "구약 성경"
+                    toolbar.title = currentTitle
                 }
                 false -> {
                     currentList.clear()
                     currentList.addAll(menuList)
+                    currentTitle = "신약 성경"
+                    toolbar.title = currentTitle
                 }
             }
             depth = 0
-            textUpdate("")
             recyclerView.adapter = mAdapter
 
         }
@@ -133,11 +139,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var r = 1
         for (i in koPartName.split("""\n""".toRegex())) {
             if (r <= 39) {
-                menuList.add(i.replace(""".*$|.*$|\([가-힣]*\)""".toRegex(), ""))
-                currentList.add(i.replace(""".*$|.*$|\([가-힣]*\)""".toRegex(), ""))
+                menuList.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
+                currentList.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
                 r++
             } else
-                menuListNew.add(i.replace(""".*$|.*$|\([가-힣]*\)""".toRegex(), ""))
+                menuListNew.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
         }
 
         mAdapter = MenuAdapter(this, currentList) { menu ->
@@ -147,21 +153,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 false -> menu.toInt() + 39
             }
             for (i in 1..dbHelper.pageCalculator(num)) {
-                pageList.add("$i")
+                pageList.add("${i}장")
             }
             depth++
-            Toast.makeText(this,"권",Toast.LENGTH_SHORT).show()
+            toolbar.title = currentList[menu.toInt() - 1]
             pageAdapter = MenuAdapter(this, pageList) { page ->
                 val lineList = arrayListOf<String>()
                 for (i in 1..dbHelper.lineCalculator(num, page.toInt())) {
-                    lineList.add("$i")
+                    lineList.add("${i}절")
                 }
                 depth++
-                Toast.makeText(this,"장",Toast.LENGTH_SHORT).show()
+                currentTitle = "${currentList[menu.toInt() - 1]} ${page.toInt()}장"
+                toolbar.title = currentTitle
                 lineAdapter = MenuAdapter(this, lineList) { line ->
-                    Toast.makeText(this,"절",Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, LinePage :: class.java)
-                    intent.putExtra("Num",num * 1000000 + page.toInt() * 1000)
+                    val intent = Intent(this, LinePage::class.java)
+                    intent.putExtra("Num", num * 1000000 + page.toInt() * 1000)
                     intent.putExtra("lineNum", num * 1000000 + page.toInt() * 1000 + line.toInt())
                     startActivity(intent)
 
@@ -178,11 +184,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         navView.setNavigationItemSelectedListener(this)
+        toolbar.title = currentTitle
+
     }
 
     private fun textUpdate(str: String) {
-        val textView = findViewById<TextView>(R.id.testView)
-        textView.text = str
     }
 
     override fun onBackPressed() {
@@ -191,13 +197,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else if (depth == 1) {
-            textUpdate("")
             recyclerView.adapter = mAdapter
             depth--
+            when (currentList[0] == "창세기 ") {
+                true -> currentTitle = "신약 성경"
+                false -> currentTitle = "구약 성경"
+            }
+            toolbar.title = currentTitle
         } else if (depth == 2) {
-            textUpdate("")
             recyclerView.adapter = pageAdapter
             depth--
+            toolbar.title = "${currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")}"
         } else {
             super.onBackPressed()
         }
@@ -206,6 +216,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+        toolbar.title = currentTitle
         return true
     }
 
@@ -223,9 +234,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                parser.htmlParser(this)
+                //parser.htmlParser(this)
             }
             R.id.nav_gallery -> {
+
             }
             R.id.nav_slideshow -> {
 
