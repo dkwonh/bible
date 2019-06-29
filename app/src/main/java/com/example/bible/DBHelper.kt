@@ -8,12 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
 class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
-
     override fun onCreate(p0: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE BIBLE" +
-                "(ID Integer PRIMARY KEY," +
-                "CONTENTS TEXT)"
-        //p0?.execSQL(createTable)
     }
 
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -21,23 +16,25 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
     }
 
     fun addContents(id: Int, contents: String) {
-        val db = this.writableDatabase
+        val db = writableDatabase
         val values = ContentValues()
 
         values.put("ID", id)
         values.put("CONTENTS", contents)
 
-        db.insert("BIBLE", null, values)
+        db.insert("bible", null, values)
+        db.close()
+
     }
 
-    fun getContents(pageid : Int) : ArrayList<String> {
-        val db = this.readableDatabase
+    fun getContents(pageid: Int): ArrayList<String> {
+        val db = readableDatabase
         val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id BETWEEN $pageid AND $pageid+1000"
 
-        val cursor : Cursor = db.rawQuery(selectSQL, null)
+        val cursor: Cursor = db.rawQuery(selectSQL, null)
         val contents = arrayListOf<String>()
         var lineNum = 1
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             contents.add("\n$lineNum. ${cursor.getString(0)}\n")
             lineNum++
         }
@@ -46,14 +43,14 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         return contents
     }
 
-    fun getContent(id : Int ) : String {
-        val db = this.readableDatabase
+    fun getContent(id: Int): String {
+        val db = readableDatabase
         val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id = $id"
 
-        val cursor : Cursor = db.rawQuery(selectSQL, null)
+        val cursor: Cursor = db.rawQuery(selectSQL, null)
         var content = ""
-        val lineNum = id%1000
-        while(cursor.moveToNext()){
+        val lineNum = id % 1000
+        while (cursor.moveToNext()) {
             content += "$lineNum. ${cursor.getString(0)}\n\n"
         }
         cursor.close()
@@ -61,49 +58,153 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         return content
     }
 
-    fun deleteAllContents(){
-        val db = this.writableDatabase
+    fun deleteAllContents() {
+        val db = writableDatabase
         val deleteSQL = "DELETE FROM BIBLE"
 
         db.execSQL(deleteSQL)
+        db.close()
+
     }
 
-    fun pageCalculator(partNum : Int) : Int{
-        val startNum = partNum * 1000000
-        val endNum = (partNum+1) * 1000000
+    fun createTable() {
+        val db = writableDatabase
+        val sql = "CREATE TABLE MEMO (ID DATETIME PRIMARY KEY, CONTENTS TEXT)"
 
-        val db = this.readableDatabase
+        db.execSQL(sql)
+        db.close()
+
+    }
+
+    fun dropTable() {
+        val db = writableDatabase
+        val sql = "DROP TABLE MEMO"
+
+        db.execSQL(sql)
+        db.close()
+
+    }
+
+    fun pageCalculator(partNum: Int): Int {
+        val startNum = partNum * 1000000
+        val endNum = (partNum + 1) * 1000000
+
+        val db = readableDatabase
         val selectSQL = "SELECT id FROM BIBLE WHERE id BETWEEN $startNum AND $endNum ORDER BY id DESC LIMIT 1"
 
-        val cursor : Cursor = db.rawQuery(selectSQL, null)
+        val cursor: Cursor = db.rawQuery(selectSQL, null)
         var contents = ""
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             contents += cursor.getInt(0)
         }
-        val pageNum = (contents.toInt()%1000000)/1000
+        val pageNum = (contents.toInt() % 1000000) / 1000
 
         cursor.close()
         db.close()
         return pageNum
     }
 
-    fun lineCalculator(partNum: Int, pageNum: Int) : Int{
+    fun lineCalculator(partNum: Int, pageNum: Int): Int {
         val startPartNum = partNum * 1000000
         val startPageNum = pageNum * 1000
-        val endPageNum = (pageNum+1) * 1000
+        val endPageNum = (pageNum + 1) * 1000
 
-        val db = this.readableDatabase
-        val selectSQL = "SELECT id FROM BIBLE WHERE id BETWEEN $startPartNum + $startPageNum AND $startPartNum + $endPageNum ORDER BY id DESC LIMIT 1"
+        val db = readableDatabase
+        val selectSQL =
+            "SELECT id FROM BIBLE WHERE id BETWEEN $startPartNum + $startPageNum AND $startPartNum + $endPageNum ORDER BY id DESC LIMIT 1"
 
-        val cursor : Cursor = db.rawQuery(selectSQL, null)
+        val cursor: Cursor = db.rawQuery(selectSQL, null)
         var contents = ""
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             contents += cursor.getInt(0)
         }
-        val lineNum = contents.toInt()%1000
+        val lineNum = contents.toInt() % 1000
 
         cursor.close()
         db.close()
         return lineNum
+    }
+
+    fun addMemo(id: String, contents: String) {
+        val db = writableDatabase
+        val values = ContentValues()
+
+        values.put("ID", id)
+        values.put("CONTENTS", contents)
+
+        db.insert("MEMO", null, values)
+        db.close()
+
+    }
+
+    fun getAllMemo(): ArrayList<String> {
+        val memo = ArrayList<String>()
+        val memoid = ArrayList<String>()
+        val db = readableDatabase
+        val sql = "SELECT * FROM MEMO"
+
+        val cursor: Cursor = db.rawQuery(sql, null)
+        while (cursor.moveToNext()) {
+            memo.add("${cursor.getString(0)}\n${cursor.getString(1)}")
+        }
+
+        cursor.close()
+        db.close()
+        return memo
+    }
+
+    fun getAllMemoID() : ArrayList<String>{
+        val memoid = ArrayList<String>()
+
+        val db = readableDatabase
+        val sql = "SELECT ID FROM MEMO"
+
+        val cursor: Cursor = db.rawQuery(sql, null)
+        while (cursor.moveToNext()) {
+            memoid.add(cursor.getString(0))
+        }
+
+        cursor.close()
+        db.close()
+        return memoid
+
+    }
+
+    fun testSelectMemo(id : String) : String{
+        val db = readableDatabase
+
+        var str = "%$id%"
+        val sql = "SELECT CONTENTS FROM MEMO WHERE ID LIKE '$str'"
+
+        val cursor: Cursor = db.rawQuery(sql, null)
+        var i = 0
+        while (cursor.moveToNext()) {
+            str += cursor.getString(0)
+            println("$str :: asa :: $i")
+            i++
+
+
+        }
+        cursor.close()
+        db.close()
+
+
+        return str
+    }
+
+    fun deleteAllMemo() {
+        val db = writableDatabase
+
+        db.delete("MEMO",null,null)
+        db.close()
+    }
+
+    fun deleteMemo(id: String) {
+        val db = writableDatabase
+        val str = "%$id%"
+        val sql = "DELETE FROM MEMO WHERE ID LIKE '$str'"
+
+        db.execSQL(sql)
+        db.close()
     }
 }

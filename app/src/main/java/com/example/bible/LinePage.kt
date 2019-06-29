@@ -1,26 +1,25 @@
 package com.example.bible
 
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.util.forEach
+import androidx.core.util.isNotEmpty
+import androidx.core.util.keyIterator
 import androidx.core.view.GravityCompat
-import androidx.core.view.doOnPreDraw
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var recyclerView: RecyclerView
@@ -38,6 +37,23 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+
+        val fab : FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener { view ->
+            if(selectedLine.isNotEmpty()) {
+                val date = Date(System.currentTimeMillis())
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                simpleDateFormat.format(date)
+                var str = ""
+                selectedLine.forEach {
+                        key, value -> str += value
+                }
+                dbHelper.addMemo(simpleDateFormat.format(date), str)
+            }
+            else
+                Toast.makeText(this,"절을 선택하고 저장버튼을 누르시면 메모할 수 있어요",Toast.LENGTH_LONG).show()
+        }
+
 
         recyclerView = findViewById(R.id.line_recycler)
         drawerLayout.addDrawerListener(toggle)
@@ -81,10 +97,11 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                Toast.makeText(this,"$selectedLine",Toast.LENGTH_SHORT).show()
+                val intent = Intent(this,MemoPage::class.java)
+                startActivity(intent)
             }
             R.id.nav_gallery -> {
-
+                dbHelper.deleteAllMemo()
             }
             R.id.nav_slideshow -> {
 

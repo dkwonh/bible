@@ -5,8 +5,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/app_bar_main"
-        tools:context=".MainActivity" android:id="@+id/text" android:overScrollMode="always"
+        tools:showIn="@layout/app_bar_linepage"
+        tools:context=".LinePage" android:id="@+id/text" android:overScrollMode="always"
         android:scrollbars="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
