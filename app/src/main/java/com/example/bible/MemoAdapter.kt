@@ -1,8 +1,6 @@
 package com.example.bible
 
-import android.content.ClipData
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.util.SparseArray
 import android.util.SparseBooleanArray
@@ -10,14 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.view.menu.MenuView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 
-class MemoAdapter(var context: Context, var memoList : ArrayList<String> , val ItemClick : (String, View) -> Unit) : RecyclerView.Adapter<MemoAdapter.Holder>() {
+class MemoAdapter(var context: Context, var memoList : ArrayList<String> ,var memoId : ArrayList<String>, val ItemClick : (String, String, View) -> Unit) : RecyclerView.Adapter<MemoAdapter.Holder>() {
     val booleanArray = SparseBooleanArray(0)
-    var selected = SparseArray<String>(0)
+    var selectedStr = SparseArray<String>(0)
+    var selectedId = SparseArray<String>(0)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.recycler_view_memo_item1,parent,false)
@@ -30,7 +26,7 @@ class MemoAdapter(var context: Context, var memoList : ArrayList<String> , val I
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(memoList[position])
+        holder.bind(memoList[position],memoId[position])
 
         if (booleanArray[position])
             holder.itemView.setBackgroundColor(Color.CYAN)
@@ -39,25 +35,29 @@ class MemoAdapter(var context: Context, var memoList : ArrayList<String> , val I
     }
 
     inner class Holder(itemView : View) : RecyclerView.ViewHolder(itemView){
-        val memo = itemView.findViewById<TextView>(R.id.memo)
+        private val memo = itemView.findViewById<TextView>(R.id.memo)
+        private val memoId = itemView.findViewById<TextView>(R.id.date)
 
-        fun bind(str : String ){
+        fun bind(str : String, id : String ){
 
             memo.text = str
+            memoId.text = id
 
-            itemView.setOnClickListener { ItemClick(str, itemView) }
+            itemView.setOnClickListener { ItemClick(id, str, itemView) }
             itemView.setBackgroundColor(Color.WHITE)
 
-            itemView.setOnLongClickListener { if (selected[adapterPosition] == str) {
+            itemView.setOnLongClickListener {
+                if (selectedStr[adapterPosition] == str && selectedId[adapterPosition] == id) {
                 booleanArray.put(adapterPosition, false)
-                selected.remove(adapterPosition)
+                selectedStr.remove(adapterPosition)
+                selectedId.remove(adapterPosition)
                 itemView.setBackgroundColor(Color.WHITE)
             } else {
                 booleanArray.put(adapterPosition, true)
-                selected.put(adapterPosition, str)
+                selectedStr.put(adapterPosition,str)
+                selectedId.put(adapterPosition,id)
                 itemView.setBackgroundColor(Color.CYAN)
             }
-                println("$booleanArray :: $selected")
                 true }
         }
     }

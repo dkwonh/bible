@@ -1,18 +1,14 @@
 package com.example.bible
 
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.SparseArray
-import android.util.SparseBooleanArray
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.forEach
-import androidx.core.util.valueIterator
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +20,11 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     lateinit var recyclerView: RecyclerView
     var dbHelper = DBHelper(this)
     var selectedMemo = SparseArray<String>(0)
-    lateinit var memoAdapter : MemoAdapter
-    var memoList = ArrayList<String>()
+    var selectedMemoId = SparseArray<String>(0)
+    lateinit var memoAdapter: MemoAdapter
+    var memoList = HashMap<String, String>()
+    private val memo = arrayListOf<String>()
+    private val memoId = arrayListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,28 +39,35 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         )
 
 
-
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
-            val id = arrayListOf<String>()
-            selectedMemo.forEach{
-                key, values -> id.add(values.substring(0,19))
-                //dbHelper.testSelectMemo(values.substring(0,19))
-                dbHelper.deleteMemo(values.substring(0,19))
-                memoList.remove(values)
-
-                memoAdapter.booleanArray.clear()
-                memoAdapter.notifyDataSetChanged()
-
+            selectedMemo.forEach { _, values ->
+                memo.remove(values)
             }
+            selectedMemoId.forEach { _, values ->
+                dbHelper.deleteMemo(values)
+                memoId.remove(values)
+            }
+            memoAdapter.booleanArray.clear()
+            memoAdapter.notifyDataSetChanged()
         }
 
         memoList = dbHelper.getAllMemo()
 
+        for (key in memoList.keys) {
+            memo.add(memoList[key].toString())
+            memoId.add(key)
+        }
+
         memoAdapter = MemoAdapter(
             this,
-            memoList
-            ){ _, _->  }
+            memo, memoId
+        ) { id, memo, _ ->
+            intent = Intent(this, MemoEdit::class.java)
+            intent.putExtra("MEMO", memo)
+            intent.putExtra("ID", id)
+            startActivity(intent)
+        }
 
 
         recyclerView = findViewById(R.id.recycler_memo)
@@ -73,7 +79,8 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        selectedMemo = memoAdapter.selected
+        selectedMemo = memoAdapter.selectedStr
+        selectedMemoId = memoAdapter.selectedId
 
         navView.setNavigationItemSelectedListener(this)
 

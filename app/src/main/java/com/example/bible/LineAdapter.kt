@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class LineAdapter(val context: Context, val lineList: ArrayList<String> ) : RecyclerView.Adapter<LineAdapter.Holder>() {
+class LineAdapter(val context: Context, private val lineList: ArrayList<String> ) : RecyclerView.Adapter<LineAdapter.Holder>() {
     val booleanArray = SparseBooleanArray(0)
     var selected = SparseArray<String>(0)
 

@@ -2,8 +2,6 @@ package com.example.bible
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -13,8 +11,6 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -131,7 +127,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             when (currentList[0] == "창세기 ") {
                 true -> {
                     currentList.clear()
@@ -201,9 +197,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         toolbar.title = currentTitle
 
-    }
-
-    private fun textUpdate(str: String) {
     }
 
     override fun onBackPressed() {

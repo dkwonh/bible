@@ -8,7 +8,8 @@
                                                    tools:showIn="@layout/app_bar_memopage"
                                                    tools:context=".MemoPage" android:id="@+id/text"
                                                    android:overScrollMode="always"
-                                                   android:scrollbars="vertical">
+                                                   android:scrollbars="vertical"
+                                                   android:background="@color/colorLTGRAY">
 
 
     <androidx.recyclerview.widget.RecyclerView

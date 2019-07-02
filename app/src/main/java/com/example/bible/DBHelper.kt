@@ -6,6 +6,10 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
     override fun onCreate(p0: SQLiteDatabase?) {
@@ -27,9 +31,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
 
     }
 
-    fun getContents(pageid: Int): ArrayList<String> {
+    fun getContents(pageId: Int): ArrayList<String> {
         val db = readableDatabase
-        val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id BETWEEN $pageid AND $pageid+1000"
+        val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id BETWEEN $pageId AND $pageId+1000"
 
         val cursor: Cursor = db.rawQuery(selectSQL, null)
         val contents = arrayListOf<String>()
@@ -125,27 +129,37 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         return lineNum
     }
 
-    fun addMemo(id: String, contents: String) {
+    fun addMemo(contents: String) {
         val db = writableDatabase
         val values = ContentValues()
+        val date = Date(System.currentTimeMillis())
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        simpleDateFormat.format(date)
 
-        values.put("ID", id)
+        values.put("ID", simpleDateFormat.format(date))
         values.put("CONTENTS", contents)
 
         db.insert("MEMO", null, values)
         db.close()
+    }
+    fun addMemo(id : String, contents: String){
+        val db = writableDatabase
+        val values = ContentValues()
 
+        values.put("CONTENTS",contents)
+
+        db.update("MEMO",values,"ID = '$id'",null)
+        db.close()
     }
 
-    fun getAllMemo(): ArrayList<String> {
-        val memo = ArrayList<String>()
-        val memoid = ArrayList<String>()
+    fun getAllMemo(): HashMap<String,String> {
+        val memo = HashMap<String,String>()
         val db = readableDatabase
-        val sql = "SELECT * FROM MEMO"
+        val sql = "SELECT * FROM MEMO ORDER BY ID DESC"
 
         val cursor: Cursor = db.rawQuery(sql, null)
         while (cursor.moveToNext()) {
-            memo.add("${cursor.getString(0)}\n${cursor.getString(1)}")
+            memo[cursor.getString(0)] = cursor.getString(1)
         }
 
         cursor.close()

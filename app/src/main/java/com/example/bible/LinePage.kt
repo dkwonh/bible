@@ -23,6 +23,8 @@ import java.util.*
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var recyclerView: RecyclerView
+    lateinit var lineAdapter : LineAdapter
+
     private val dbHelper = DBHelper(this)
     var selectedLine = SparseArray<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,21 +40,26 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
+
         val fab : FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             if(selectedLine.isNotEmpty()) {
-                val date = Date(System.currentTimeMillis())
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                simpleDateFormat.format(date)
                 var str = ""
                 selectedLine.forEach {
-                        key, value -> str += value
+                        _, value -> str += value
                 }
-                dbHelper.addMemo(simpleDateFormat.format(date), str)
+                val intent = Intent(this, MemoEdit::class.java).putExtra("MEMO",str)
+                startActivity(intent)
+
+                lineAdapter.selected.clear()
+                lineAdapter.booleanArray.clear()
+                lineAdapter.notifyDataSetChanged()
             }
             else
                 Toast.makeText(this,"절을 선택하고 저장버튼을 누르시면 메모할 수 있어요",Toast.LENGTH_LONG).show()
         }
+
+
 
 
         recyclerView = findViewById(R.id.line_recycler)
@@ -61,9 +68,10 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val text = dbHelper.getContents(intent.getIntExtra("Num",1001001))
         val line = intent.getIntExtra("lineNum",1)%1000
 
+        lineAdapter = LineAdapter(this,text)
+
         navView.setNavigationItemSelectedListener(this)
 
-        val lineAdapter = LineAdapter(this,text)
 
         selectedLine = lineAdapter.selected
 
