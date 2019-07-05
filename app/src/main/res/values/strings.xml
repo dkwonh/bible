@@ -7,6 +7,10 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">환경 설정</string>
     <string name="save_memo">저장</string>
+    <string name="update_memo">편집</string>
+    <string name="note">Notepad</string>
+    <string name="proverbs">Daily Proverbs</string>
+    <string name="delete_memo">삭제</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>

@@ -7,7 +7,7 @@
           app:showAsAction="never"/>
     <item android:id="@+id/save_memo"
           android:title="@string/save_memo"
-          android:icon="@drawable/ic_menu_gallery"
+          android:icon="@drawable/ic_save_note_dark"
           app:showAsAction="ifRoom"
           />
 </menu>

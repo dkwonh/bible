@@ -1,5 +1,6 @@
 package com.example.bible
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -32,7 +33,13 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
         val memo = intent.getStringExtra("MEMO")
 
-        editText.setText(memo)
+        val first = memo?.get(0)
+
+
+        if(first == '\n')
+            editText.setText(memo.substring(1))
+        else
+            editText.setText(memo)
 
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -56,15 +63,21 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             R.id.save_memo -> {
                 val str = editText.text.toString()
                 val id = intent?.getStringExtra("ID")
-                if(id==null) {
+                if(id==null) {//새롭게 작성된 메모
                     dbHelper.addMemo(str)
+                    if(intent.getStringExtra("MemoPage")==null){//라인페이지에서 넘어온 경우
+                        val intent = Intent(this, MemoPage::class.java)
+                        startActivity(intent)
+                    }
+                    else//메모페이지에서 넘어온 경우
+                        setResult(RESULT_OK,intent)
                 }
-                else {
+                else {//기존에 있는 메모
                     dbHelper.addMemo(id, str)
+                    intent.putExtra("MEMO",str)
+                    intent.putExtra("ID",id)
+                    setResult(RESULT_OK,intent)
                 }
-                /*val intent = Intent(this,MemoPage::class.java)
-                startActivity(intent)*/
-
                 finish()
                 true
             }
@@ -78,14 +91,12 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         when (item.itemId) {
             R.id.nav_home -> {
             }
-            R.id.nav_gallery -> {
+            R.id.nav_note -> {
             }
-            R.id.nav_slideshow -> {
 
+            R.id.nav_daily -> {
             }
-            R.id.nav_tools -> {
 
-            }
             R.id.nav_share -> {
 
             }

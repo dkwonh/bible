@@ -2,6 +2,7 @@ package com.example.bible
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,13 +23,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var pageAdapter: MenuAdapter
     private lateinit var lineAdapter: MenuAdapter
     lateinit var recyclerView: RecyclerView
-    private val parser = Parser()
     private val dbHelper = DBHelper(this)
     private var currentList = arrayListOf<String>()
     private var menuList = arrayListOf<String>()
     private var menuListNew = arrayListOf<String>()
     private var depth = 0
-    private var currentTitle = "신약 성경"
+    private var currentTitle = "구약 성경"
     //구약 39 신약 27
     private var koPartName = """창세기 (창세,창)
 출애굽기/탈출기 (탈출,출)
@@ -104,8 +104,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
 
-
-
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         recyclerView = findViewById(R.id.recyclerView)
@@ -115,10 +113,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
-        if(getDatabasePath("bible").exists()){
-        }
-        else
-        {
+        if (getDatabasePath("bible").exists()) {
+        } else {
             FileOutputStream(getDatabasePath("bible").path).use { out ->
                 assets.open("bible").use {
                     it.copyTo(out)
@@ -132,14 +128,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 true -> {
                     currentList.clear()
                     currentList.addAll(menuListNew)
-                    currentTitle = "구약 성경"
+                    currentTitle = "신약 성경"
                     toolbar.title = currentTitle
+                    fab.setImageResource(R.drawable.ic_old_tes)
+
                 }
                 false -> {
                     currentList.clear()
                     currentList.addAll(menuList)
-                    currentTitle = "신약 성경"
+                    currentTitle = "구약 성경"
                     toolbar.title = currentTitle
+                    fab.setImageResource(R.drawable.ic_new_tes)
                 }
             }
             depth = 0
@@ -180,6 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val intent = Intent(this, LinePage::class.java)
                     intent.putExtra("Num", num * 1000000 + page.toInt() * 1000)
                     intent.putExtra("lineNum", num * 1000000 + page.toInt() * 1000 + line.toInt())
+                    intent.putExtra("TITLE", currentTitle)
                     startActivity(intent)
 
                 }
@@ -208,8 +208,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             recyclerView.adapter = mAdapter
             depth--
             when (currentList[0] == "창세기 ") {
-                true -> currentTitle = "신약 성경"
-                false -> currentTitle = "구약 성경"
+                true -> currentTitle = "구약 성경"
+                false -> currentTitle = "신약 성경"
             }
             toolbar.title = currentTitle
         } else if (depth == 2) {
@@ -243,15 +243,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_home -> {
             }
-            R.id.nav_gallery -> {
-
+            R.id.nav_note -> {
             }
-            R.id.nav_slideshow -> {
 
+            R.id.nav_daily -> {
             }
-            R.id.nav_tools -> {
 
-            }
             R.id.nav_share -> {
 
             }

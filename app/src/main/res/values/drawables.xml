@@ -5,4 +5,11 @@
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
     <item name="ic_menu_share" type="drawable">@android:drawable/ic_menu_share</item>
     <item name="ic_menu_send" type="drawable">@android:drawable/ic_menu_send</item>
+    <item name="ic_home" type="drawable">@drawable/ic_home</item>
+    <item name="ic_delete" type="drawable">@drawable/ic_delete</item>
+    <item name="ic_daily_proverbs" type="drawable">@drawable/ic_daily_proverbs</item>
+    <item name="ic_notepad" type="drawable">@drawable/ic_notepad</item>
+    <item name="ic_save_note" type="drawable">@drawable/ic_save_note</item>
+    <item name="ic_old_testament" type="drawable">@drawable/ic_old_tes</item>
+    <item name="ic_new_testament" type="drawable">@drawable/ic_new_tes</item>
 </resources>

@@ -164,6 +164,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
 
         cursor.close()
         db.close()
+        Log.v("Call getAllMemo","DBHELPER")
         return memo
     }
 

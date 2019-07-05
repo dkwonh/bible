@@ -1,20 +1,27 @@
 package com.example.bible
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
+import android.util.SparseBooleanArray
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.util.containsValue
 import androidx.core.util.forEach
+import androidx.core.util.isNotEmpty
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import java.util.*
+import kotlin.collections.HashMap
 
 class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var recyclerView: RecyclerView
@@ -25,6 +32,9 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     var memoList = HashMap<String, String>()
     private val memo = arrayListOf<String>()
     private val memoId = arrayListOf<String>()
+    lateinit var fab: FloatingActionButton
+    private val booleanArray = SparseBooleanArray(0)
+    var longClickFlag = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,35 +48,55 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
-
-        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab = findViewById(R.id.fab)
         fab.setOnClickListener {
-            selectedMemo.forEach { _, values ->
-                memo.remove(values)
+            if (selectedMemo.isNotEmpty()) {
+                selectedMemo.forEach { _, values ->
+                    memo.remove(values)
+                }
+                selectedMemoId.forEach { _, values ->
+                    dbHelper.deleteMemo(values)
+                    memoId.remove(values)
+                }
+                selectedMemo.clear()
+                memoAdapter.booleanArray.clear()
+                memoAdapter.notifyDataSetChanged()
+                changeFabImage(1)
+            } else {
+                val intent = Intent(this, MemoEdit::class.java)
+                intent.putExtra("MemoPage", "Memo")
+                startActivityForResult(intent, 2)
             }
-            selectedMemoId.forEach { _, values ->
-                dbHelper.deleteMemo(values)
-                memoId.remove(values)
-            }
-            memoAdapter.booleanArray.clear()
-            memoAdapter.notifyDataSetChanged()
         }
 
-        memoList = dbHelper.getAllMemo()
-
-        for (key in memoList.keys) {
-            memo.add(memoList[key].toString())
-            memoId.add(key)
-        }
-
+        memoUpdate()
         memoAdapter = MemoAdapter(
             this,
-            memo, memoId
-        ) { id, memo, _ ->
-            intent = Intent(this, MemoEdit::class.java)
-            intent.putExtra("MEMO", memo)
-            intent.putExtra("ID", id)
-            startActivity(intent)
+            memo, memoId, ItemClick = { id, memo, _ ->
+                intent = Intent(this, MemoView::class.java)
+                intent.putExtra("MEMO", memo)
+                intent.putExtra("ID", id)
+                startActivity(intent)
+            }
+        )
+        { id, memo, position, view ->
+            changeFabImage(0)
+            if (selectedMemo[position] == memo && selectedMemoId[position] == id) {
+                booleanArray.put(position, false)
+                selectedMemo.remove(position)
+                selectedMemoId.remove(position)
+                view.setBackgroundColor(Color.rgb(243, 243, 243))
+            } else {
+                booleanArray.put(position, true)
+                selectedMemo.put(position, memo)
+                selectedMemoId.put(position, id)
+                view.setBackgroundColor(Color.CYAN)
+            }
+            if(!booleanArray.containsValue(true))
+                changeFabImage(1)
+            else
+                changeFabImage(0)
+            true
         }
 
 
@@ -85,6 +115,50 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         navView.setNavigationItemSelectedListener(this)
 
 
+    }
+
+    private fun changeFabImage(flag: Int) {
+        when (flag) {
+            0 -> fab.setImageResource(R.drawable.ic_delete_dark)
+            1 -> fab.setImageResource(R.drawable.ic_notepad_dark)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        memoUpdate()
+        memoAdapter.notifyDataSetChanged()
+    }
+
+    private fun memoUpdate() {
+        memoList = dbHelper.getAllMemo()
+        val treeMap = TreeMap<String, String>(reverseOrder())
+        treeMap.putAll(memoList)
+        memo.clear()
+        memoId.clear()
+        for (key in treeMap.keys) {
+            memo.add(treeMap[key].toString())
+            memoId.add(key)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            Log.v("RESULT_OK", requestCode.toString())
+            when (requestCode) {
+                1 -> {
+                    memoUpdate()
+                    memoAdapter.notifyDataSetChanged()
+                }
+                2 -> {
+                    memoUpdate()
+                    memoAdapter.notifyDataSetChanged()
+                }
+
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -110,14 +184,12 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         when (item.itemId) {
             R.id.nav_home -> {
             }
-            R.id.nav_gallery -> {
+            R.id.nav_note -> {
             }
-            R.id.nav_slideshow -> {
 
+            R.id.nav_daily -> {
             }
-            R.id.nav_tools -> {
 
-            }
             R.id.nav_share -> {
 
             }

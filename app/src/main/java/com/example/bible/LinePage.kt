@@ -2,6 +2,7 @@ package com.example.bible
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
@@ -18,12 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.app_bar_linepage.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var recyclerView: RecyclerView
-    lateinit var lineAdapter : LineAdapter
+    lateinit var lineAdapter: LineAdapter
 
     private val dbHelper = DBHelper(this)
     var selectedLine = SparseArray<String>()
@@ -41,34 +43,32 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         )
 
 
-        val fab : FloatingActionButton = findViewById(R.id.fab)
+        val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
-            if(selectedLine.isNotEmpty()) {
+            if (selectedLine.isNotEmpty()) {
                 var str = ""
-                selectedLine.forEach {
-                        _, value -> str += value
+                selectedLine.forEach { _, value ->
+                    str += value
                 }
-                val intent = Intent(this, MemoEdit::class.java).putExtra("MEMO",str)
+                val intent = Intent(this, MemoEdit::class.java).putExtra("MEMO", str)
                 startActivity(intent)
 
                 lineAdapter.selected.clear()
                 lineAdapter.booleanArray.clear()
                 lineAdapter.notifyDataSetChanged()
-            }
-            else
-                Toast.makeText(this,"절을 선택하고 저장버튼을 누르시면 메모할 수 있어요",Toast.LENGTH_LONG).show()
+            } else
+                Toast.makeText(this, "절을 선택하고 저장버튼을 누르시면 메모할 수 있어요", Toast.LENGTH_SHORT).show()
         }
-
 
 
 
         recyclerView = findViewById(R.id.line_recycler)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-        val text = dbHelper.getContents(intent.getIntExtra("Num",1001001))
-        val line = intent.getIntExtra("lineNum",1)%1000
+        val text = dbHelper.getContents(intent.getIntExtra("Num", 1001001))
+        val line = intent.getIntExtra("lineNum", 1) % 1000
 
-        lineAdapter = LineAdapter(this,text)
+        lineAdapter = LineAdapter(this, text)
 
         navView.setNavigationItemSelectedListener(this)
 
@@ -79,13 +79,15 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
 
-        recyclerView.scrollToPosition(line-1)
+        recyclerView.scrollToPosition(line - 1)
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+        toolbar.title = intent.getStringExtra("TITLE")
+
         return true
     }
 
@@ -105,18 +107,15 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                val intent = Intent(this,MemoPage::class.java)
+            }
+            R.id.nav_note -> {
+                val intent = Intent(this, MemoPage::class.java)
                 startActivity(intent)
             }
-            R.id.nav_gallery -> {
-                dbHelper.deleteAllMemo()
-            }
-            R.id.nav_slideshow -> {
 
+            R.id.nav_daily -> {
             }
-            R.id.nav_tools -> {
 
-            }
             R.id.nav_share -> {
 
             }
@@ -124,6 +123,7 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
             }
         }
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true

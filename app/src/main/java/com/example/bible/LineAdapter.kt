@@ -29,7 +29,7 @@ class LineAdapter(val context: Context, private val lineList: ArrayList<String> 
         if (booleanArray[position])
             holder.itemView.setBackgroundColor(Color.CYAN)
         else
-            holder.itemView.setBackgroundColor(Color.WHITE)
+            holder.itemView.setBackgroundColor(Color.rgb(243,243,243))
 
     }
 
@@ -44,7 +44,7 @@ class LineAdapter(val context: Context, private val lineList: ArrayList<String> 
                 if (selected[adapterPosition] == str) {
                     booleanArray.put(adapterPosition, false)
                     selected.remove(adapterPosition)
-                    view.setBackgroundColor(Color.WHITE)
+                    view.setBackgroundColor(Color.rgb(243,243,243))
                 } else {
                     booleanArray.put(adapterPosition, true)
                     selected.put(adapterPosition, str)
