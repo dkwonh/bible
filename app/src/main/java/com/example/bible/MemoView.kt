@@ -91,11 +91,19 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
+                intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
             }
             R.id.nav_note -> {
+                val intent = Intent(this,MemoPage::class.java)
+                startActivity(intent)
             }
 
             R.id.nav_daily -> {
+                val intent = Intent(this, LinePage::class.java)
+                intent.putExtra("PROVERBS","200")
+                startActivity(intent)
             }
 
             R.id.nav_share -> {

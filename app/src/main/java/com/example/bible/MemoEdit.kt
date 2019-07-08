@@ -1,12 +1,10 @@
 package com.example.bible
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -15,7 +13,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 
 class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    lateinit var editText: EditText
+    private lateinit var editText: EditText
     private val dbHelper = DBHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,11 +88,22 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
+                intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
             }
             R.id.nav_note -> {
+                val intent = Intent(this,MemoPage::class.java)
+                startActivity(intent)
+                finish()
             }
 
             R.id.nav_daily -> {
+                val intent = Intent(this, LinePage::class.java)
+                intent.putExtra("PROVERBS","200")
+                startActivity(intent)
+                finish()
             }
 
             R.id.nav_share -> {

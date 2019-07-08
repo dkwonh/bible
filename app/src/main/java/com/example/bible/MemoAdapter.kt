@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MemoAdapter(
     var context: Context,
-    var memoList: ArrayList<String>,
-    var memoId: ArrayList<String>,
+    private var memoList: ArrayList<String>,
+    private var memoId: ArrayList<String>,
     val ItemClick: (String, String, View) -> Unit,
     val ItemLongClick: (String, String, Int, View) -> Boolean
 ) : RecyclerView.Adapter<MemoAdapter.Holder>() {

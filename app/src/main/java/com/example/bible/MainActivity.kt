@@ -2,7 +2,6 @@ package com.example.bible
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -17,12 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.FileOutputStream
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var mAdapter: MenuAdapter
     private lateinit var pageAdapter: MenuAdapter
     private lateinit var lineAdapter: MenuAdapter
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private val dbHelper = DBHelper(this)
     private var currentList = arrayListOf<String>()
     private var menuList = arrayListOf<String>()
@@ -215,7 +213,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else if (depth == 2) {
             recyclerView.adapter = pageAdapter
             depth--
-            toolbar.title = "${currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")}"
+            toolbar.title = currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")
         } else {
             super.onBackPressed()
         }
@@ -242,11 +240,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
+                depth = 0
+                currentList.clear()
+                currentList.addAll(menuList)
+                mAdapter.notifyDataSetChanged()
+                recyclerView.adapter = mAdapter
+                toolbar.title = "구약 성경"
+                fab.setImageResource(R.drawable.ic_new_tes)
+
             }
             R.id.nav_note -> {
+                val intent = Intent(this, MemoPage::class.java)
+                startActivity(intent)
             }
 
             R.id.nav_daily -> {
+                val intent = Intent(this, LinePage::class.java)
+                intent.putExtra("PROVERBS","200")
+                startActivity(intent)
             }
 
             R.id.nav_share -> {

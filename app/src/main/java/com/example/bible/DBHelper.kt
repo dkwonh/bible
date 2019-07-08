@@ -134,7 +134,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         val values = ContentValues()
         val date = Date(System.currentTimeMillis())
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        simpleDateFormat.format(date)
 
         values.put("ID", simpleDateFormat.format(date))
         values.put("CONTENTS", contents)
@@ -164,47 +163,24 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
 
         cursor.close()
         db.close()
-        Log.v("Call getAllMemo","DBHELPER")
         return memo
     }
 
     fun getAllMemoID() : ArrayList<String>{
-        val memoid = ArrayList<String>()
+        val memoId = ArrayList<String>()
 
         val db = readableDatabase
         val sql = "SELECT ID FROM MEMO"
 
         val cursor: Cursor = db.rawQuery(sql, null)
         while (cursor.moveToNext()) {
-            memoid.add(cursor.getString(0))
+            memoId.add(cursor.getString(0))
         }
 
         cursor.close()
         db.close()
-        return memoid
+        return memoId
 
-    }
-
-    fun testSelectMemo(id : String) : String{
-        val db = readableDatabase
-
-        var str = "%$id%"
-        val sql = "SELECT CONTENTS FROM MEMO WHERE ID LIKE '$str'"
-
-        val cursor: Cursor = db.rawQuery(sql, null)
-        var i = 0
-        while (cursor.moveToNext()) {
-            str += cursor.getString(0)
-            println("$str :: asa :: $i")
-            i++
-
-
-        }
-        cursor.close()
-        db.close()
-
-
-        return str
     }
 
     fun deleteAllMemo() {

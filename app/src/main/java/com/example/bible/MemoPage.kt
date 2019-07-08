@@ -24,17 +24,16 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    lateinit var recyclerView: RecyclerView
-    var dbHelper = DBHelper(this)
-    var selectedMemo = SparseArray<String>(0)
-    var selectedMemoId = SparseArray<String>(0)
-    lateinit var memoAdapter: MemoAdapter
-    var memoList = HashMap<String, String>()
+    private lateinit var recyclerView: RecyclerView
+    private var dbHelper = DBHelper(this)
+    private var selectedMemo = SparseArray<String>(0)
+    private var selectedMemoId = SparseArray<String>(0)
+    private lateinit var memoAdapter: MemoAdapter
+    private var memoList = HashMap<String, String>()
     private val memo = arrayListOf<String>()
     private val memoId = arrayListOf<String>()
-    lateinit var fab: FloatingActionButton
+    private lateinit var fab: FloatingActionButton
     private val booleanArray = SparseBooleanArray(0)
-    var longClickFlag = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -183,11 +182,17 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
+                intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
             }
             R.id.nav_note -> {
             }
 
             R.id.nav_daily -> {
+                val intent = Intent(this, LinePage::class.java)
+                intent.putExtra("PROVERBS","200")
+                startActivity(intent)
             }
 
             R.id.nav_share -> {

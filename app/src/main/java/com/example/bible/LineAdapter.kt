@@ -24,7 +24,7 @@ class LineAdapter(val context: Context, private val lineList: ArrayList<String> 
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(lineList[position], context)
+        holder.bind(lineList[position])
 
         if (booleanArray[position])
             holder.itemView.setBackgroundColor(Color.CYAN)
@@ -34,9 +34,9 @@ class LineAdapter(val context: Context, private val lineList: ArrayList<String> 
     }
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val line = itemView.findViewById<TextView>(R.id.textView)
+        private val line = itemView.findViewById<TextView>(R.id.textView)
 
-        fun bind(str: String, context: Context) {
+        fun bind(str: String) {
             line.text = str
             val view = itemView
 

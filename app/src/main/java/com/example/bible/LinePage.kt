@@ -2,7 +2,6 @@ package com.example.bible
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
@@ -12,23 +11,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.forEach
 import androidx.core.util.isNotEmpty
-import androidx.core.util.keyIterator
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_linepage.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    lateinit var recyclerView: RecyclerView
-    lateinit var lineAdapter: LineAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var lineAdapter: LineAdapter
 
     private val dbHelper = DBHelper(this)
-    var selectedLine = SparseArray<String>()
+    private var selectedLine = SparseArray<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.line_page_main)
@@ -43,7 +40,7 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         )
 
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
+        /*val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
             if (selectedLine.isNotEmpty()) {
                 var str = ""
@@ -58,18 +55,33 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 lineAdapter.notifyDataSetChanged()
             } else
                 Toast.makeText(this, "절을 선택하고 저장버튼을 누르시면 메모할 수 있어요", Toast.LENGTH_SHORT).show()
-        }
+        }*/
 
 
 
         recyclerView = findViewById(R.id.line_recycler)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-        val text = dbHelper.getContents(intent.getIntExtra("Num", 1001001))
+        val date = SimpleDateFormat("dd").format(Date())
+
+        val pageId: Int
+        val id = intent.getStringExtra("PROVERBS")
+        when (id is String) {
+            true -> {
+                pageId = "200${date}000".toInt()
+            }
+            else -> {
+                pageId = intent.getIntExtra("Num",1001001)
+            }
+
+        }
+
+        val text = dbHelper.getContents(pageId)
         val line = intent.getIntExtra("lineNum", 1) % 1000
+
 
         lineAdapter = LineAdapter(this, text)
 
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
         navView.setNavigationItemSelectedListener(this)
 
 
@@ -85,9 +97,9 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        toolbar.title = intent.getStringExtra("TITLE")
-
+        menuInflater.inflate(R.menu.line_menu_main, menu)
+        toolbar.title =
+            intent.getStringExtra("TITLE") ?: "매일 매일 잠언 ${SimpleDateFormat("dd").format(Date())}장"
         return true
     }
 
@@ -97,6 +109,22 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
+            R.id.save_memo -> {
+                if (selectedLine.isNotEmpty()) {
+                    var str = ""
+                    selectedLine.forEach { _, value ->
+                        str += value
+                    }
+                    val intent = Intent(this, MemoEdit::class.java).putExtra("MEMO", str)
+                    startActivity(intent)
+
+                    lineAdapter.selected.clear()
+                    lineAdapter.booleanArray.clear()
+                    lineAdapter.notifyDataSetChanged()
+                } else
+                    Toast.makeText(this, "절을 선택하고 저장버튼을 누르시면 메모할 수 있어요", Toast.LENGTH_SHORT).show()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
 
 
@@ -107,6 +135,9 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
+                intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
             }
             R.id.nav_note -> {
                 val intent = Intent(this, MemoPage::class.java)
