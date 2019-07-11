@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -215,7 +216,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             depth--
             toolbar.title = currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")
         } else {
-            super.onBackPressed()
+            alertDialog()
         }
     }
 
@@ -247,7 +248,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 recyclerView.adapter = mAdapter
                 toolbar.title = "구약 성경"
                 fab.setImageResource(R.drawable.ic_new_tes)
-
             }
             R.id.nav_note -> {
                 val intent = Intent(this, MemoPage::class.java)
@@ -270,5 +270,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun alertDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("개역 한글 성경")
+        builder.setMessage("종료하실래요?")
+        builder.setPositiveButton("예"){ dialogInterface, i -> super.onBackPressed() }
+        builder.setNegativeButton("아니오"){dialogInterface, i -> }
+        builder.show()
     }
 }

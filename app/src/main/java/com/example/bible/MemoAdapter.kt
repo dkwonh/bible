@@ -34,15 +34,19 @@ class MemoAdapter(
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bind(memoList[position], memoId[position])
 
-        if (booleanArray[position])
-            holder.itemView.setBackgroundColor(Color.CYAN)
-        else
-            holder.itemView.setBackgroundColor(Color.rgb(243, 243, 243))
+        if (booleanArray[position]) {
+            holder.memo.setBackgroundResource(R.drawable.item_selector_choice)
+            holder.memoId.setBackgroundResource(R.drawable.item_bottom_selector_choice)
+        }
+        else {
+            holder.memo.setBackgroundResource(R.drawable.item_selector)
+            holder.memoId.setBackgroundResource(R.drawable.item_bottom_selector)
+        }
     }
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val memo = itemView.findViewById<TextView>(R.id.memo)
-        private val memoId = itemView.findViewById<TextView>(R.id.date)
+         val memo = itemView.findViewById<TextView>(R.id.memo)
+         val memoId = itemView.findViewById<TextView>(R.id.date)
 
         fun bind(str: String, id: String) {
             val line = str.lines().size
@@ -54,10 +58,9 @@ class MemoAdapter(
                 else -> 5
             }
 
-
+            itemView.setBackgroundResource(R.color.colorLTGRAY)
             itemView.setOnClickListener { ItemClick(id, str, itemView) }
             itemView.setOnLongClickListener { ItemLongClick(id, str, adapterPosition, itemView) }
-            itemView.setBackgroundColor(Color.rgb(243, 243, 243))
         }
     }
 }

@@ -8,6 +8,7 @@ import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -33,7 +34,6 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     private val memo = arrayListOf<String>()
     private val memoId = arrayListOf<String>()
     private lateinit var fab: FloatingActionButton
-    private val booleanArray = SparseBooleanArray(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,22 +76,30 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 intent.putExtra("MEMO", memo)
                 intent.putExtra("ID", id)
                 startActivity(intent)
+                selectedMemo.clear()
+                memoAdapter.booleanArray.clear()
+                memoAdapter.notifyDataSetChanged()
+                changeFabImage(1)
             }
         )
         { id, memo, position, view ->
             changeFabImage(0)
+            val memoText = view.findViewById<TextView>(R.id.memo)
+            val dateText = view.findViewById<TextView>(R.id.date)
             if (selectedMemo[position] == memo && selectedMemoId[position] == id) {
-                booleanArray.put(position, false)
+                memoAdapter.booleanArray.put(position, false)
                 selectedMemo.remove(position)
                 selectedMemoId.remove(position)
-                view.setBackgroundColor(Color.rgb(243, 243, 243))
+                memoText.setBackgroundResource(R.drawable.item_selector)
+                dateText.setBackgroundResource(R.drawable.item_bottom_selector)
             } else {
-                booleanArray.put(position, true)
+                memoAdapter.booleanArray.put(position, true)
                 selectedMemo.put(position, memo)
                 selectedMemoId.put(position, id)
-                view.setBackgroundColor(Color.CYAN)
+                memoText.setBackgroundResource(R.drawable.item_selector_choice)
+                dateText.setBackgroundResource(R.drawable.item_bottom_selector_choice)
             }
-            if(!booleanArray.containsValue(true))
+            if(!memoAdapter.booleanArray.containsValue(true))
                 changeFabImage(1)
             else
                 changeFabImage(0)
@@ -145,7 +153,6 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-            Log.v("RESULT_OK", requestCode.toString())
             when (requestCode) {
                 1 -> {
                     memoUpdate()
@@ -161,15 +168,11 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
@@ -179,7 +182,6 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
                 intent = Intent(this, MainActivity::class.java)
