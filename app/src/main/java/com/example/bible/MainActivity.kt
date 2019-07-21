@@ -29,72 +29,72 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var depth = 0
     private var currentTitle = "구약 성경"
     //구약 39 신약 27
-    private var koPartName = """창세기 (창세,창)
-출애굽기/탈출기 (탈출,출)
-레위기 (레위,레)
-민수기 (민수,민)
-신명기 (신명,신)
-여호수아 (수)
-사사기/판관기 (삿)
-룻기 (룻)
-사무엘 상 (삼상)
-사무엘 하 (삼하)
-열왕기 상 (왕상)
-열왕기 하 (왕하)
-역대상/역대기 상 (대상)
-역대하/역대기 하 (대하)
-에스라/에즈라 (스)
-느헤미야 (느)
-에스더/에스테르(에)
-욥기 (욥)
-시편 (시)
-잠언 (잠)
-전도서/코헬렛 (전)
-아가 (아)
-이사야 (사)
-예레미야 (렘)
-예레미야애가/애가 (애)
-에스겔/에제키엘 (겔)
-다니엘 (단)
-호세아 (호)
-요엘 (욜)
-아모스 (암)
-오바댜 (옵)
-요나 (욘)
-미가/미카 (미)
-나훔 (나)
-하박국/하바쿡 (합)
-스바냐/스바니야 (습)
-학개/하까이 (학)
-스가랴/즈카르야 (슥)
-말라기/말라키 (말)
-마태 복음,마태오 복음(마)
-마가 복음,마르코 복음(막)
-누가 복음,루카 복음(눅)
-요한 복음(요)
-사도행전(행)
-로마서(롬)
-고린도전서,코린토1서(고전)
-고린도후서,코린토2서(고후)
-갈라디아서(갈)
-에베소서, 에페소서(엡)
-빌립보서,필리피서(빌)
-골로새서,콜로새서(골)
-데살로니가전서,테살로니카1서(살전)
-데살로니가후서,테살로니카2서(살후)
-디모데전서,티모테오1서(딤전)
-디모데후서,티모테오2서(딤후)
-디도서,티토서(딛)
-빌레몬서,필레몬서(몬)
-히브리서(히)
-야고보서(약)
-베드로전서(벧전)
-베드로후서(벧후)
-요한1서(요일)
-요한2서(요이)
-요한3서(요삼)
-유다서(유)
-요한계시록,요한묵시록(계)"""
+    private var koPartName = """창세기
+출애굽기
+레위기
+민수기
+신명기
+여호수아
+사사기
+룻기
+사무엘 상
+사무엘 하
+열왕기 상
+열왕기 하
+역대상
+역대하
+에스라
+느헤미야
+에스더
+욥기
+시편
+잠언
+전도서
+아가
+이사야
+예레미야
+예레미야애가
+에스겔
+다니엘
+호세아
+요엘
+아모스
+오바댜
+요나
+미가
+나훔
+하박국
+스바냐
+학개
+스가랴
+말라기
+마태 복음
+마가 복음
+누가 복음
+요한 복음
+사도행전
+로마서
+고린도전서
+고린도후서
+갈라디아서
+에베소서
+빌립보서
+골로새서
+데살로니가전서
+데살로니가후서
+디모데전서
+디모데후서
+디도서
+빌레몬서
+히브리서
+야고보서
+베드로전서
+베드로후서
+요한1서
+요한2서
+요한3서
+유다
+요한계시록"""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,24 +112,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
-        if (getDatabasePath("bible").exists()) {
-        } else {
-            FileOutputStream(getDatabasePath("bible").path).use { out ->
-                assets.open("bible").use {
-                    it.copyTo(out)
-                }
-            }
-        }
+        if (!getDatabasePath("bible").exists())
+            dbCopy()
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
-            when (currentList[0] == "창세기 ") {
+            when (currentList[0] == "창세기") {
                 true -> {
                     currentList.clear()
                     currentList.addAll(menuListNew)
                     currentTitle = "신약 성경"
                     toolbar.title = currentTitle
-                    fab.setImageResource(R.drawable.ic_old_tes)
+                    //fab.setImageResource(R.drawable.ic_old_tes)
 
                 }
                 false -> {
@@ -137,27 +131,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     currentList.addAll(menuList)
                     currentTitle = "구약 성경"
                     toolbar.title = currentTitle
-                    fab.setImageResource(R.drawable.ic_new_tes)
+                    //fab.setImageResource(R.drawable.ic_new_tes)
                 }
             }
             depth = 0
             recyclerView.adapter = mAdapter
-
         }
 
         var r = 1
         for (i in koPartName.split("""\n""".toRegex())) {
             if (r <= 39) {
-                menuList.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
-                currentList.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
+                menuList.add(i)
+                currentList.add(i)
                 r++
             } else
-                menuListNew.add(i.replace("""\,.*$|\/.*$|\([가-힣\,]*\)""".toRegex(), ""))
+                menuListNew.add(i)
         }
 
         mAdapter = MenuAdapter(this, currentList) { menu ->
             val pageList = arrayListOf<String>()
-            val num = when (currentList[0] == "창세기 ") {
+            val num = when (currentList[0] == "창세기") {
                 true -> menu.toInt()
                 false -> menu.toInt() + 39
             }
@@ -179,6 +172,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     intent.putExtra("Num", num * 1000000 + page.toInt() * 1000)
                     intent.putExtra("lineNum", num * 1000000 + page.toInt() * 1000 + line.toInt())
                     intent.putExtra("TITLE", currentTitle)
+                    val bundle = Bundle()
+                    bundle.putString("Part",currentList[menu.toInt() - 1])
+                    bundle.putInt("Number",page.toInt())
+                    intent.putExtras(bundle)
                     startActivity(intent)
 
                 }
@@ -201,12 +198,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onBackPressed() {
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        when (drawerLayout.isDrawerOpen((GravityCompat.START))) {
+            true -> drawerLayout.closeDrawer(GravityCompat.START)
+            false -> {
+                when (depth) {
+                    1 -> {
+                        recyclerView.adapter = mAdapter
+                        depth--
+                        when (currentList[0] == "창세기") {
+                            true -> titleUpdate("구약 성경")
+                            false -> titleUpdate("신약 성경")
+                        }
+                        toolbar.title = currentTitle
+                    }
+
+                    2 -> {
+                        recyclerView.adapter = pageAdapter
+                        depth--
+                        toolbar.title = currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")
+                    }
+                    else -> {
+                        alertDialog()
+                    }
+                }
+            }
+        }
+
+
+        /*if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else if (depth == 1) {
             recyclerView.adapter = mAdapter
             depth--
-            when (currentList[0] == "창세기 ") {
+            when (currentList[0] == "창세기") {
                 true -> currentTitle = "구약 성경"
                 false -> currentTitle = "신약 성경"
             }
@@ -217,6 +241,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             toolbar.title = currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")
         } else {
             alertDialog()
+        }*/
+    }
+
+    private fun titleUpdate(title: String) {
+        currentTitle = title
+        toolbar.title = currentTitle
+    }
+
+    private fun dbCopy() {
+        FileOutputStream(getDatabasePath("bible").path).use { out ->
+            assets.open("bible").use {
+                it.copyTo(out)
+            }
         }
     }
 
@@ -247,7 +284,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mAdapter.notifyDataSetChanged()
                 recyclerView.adapter = mAdapter
                 toolbar.title = "구약 성경"
-                fab.setImageResource(R.drawable.ic_new_tes)
+                //fab.setImageResource(R.drawable.ic_new_tes)
             }
             R.id.nav_note -> {
                 val intent = Intent(this, MemoPage::class.java)
@@ -256,7 +293,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             R.id.nav_daily -> {
                 val intent = Intent(this, LinePage::class.java)
-                intent.putExtra("PROVERBS","200")
+                intent.putExtra("PROVERBS", "200")
                 startActivity(intent)
             }
 
@@ -272,12 +309,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun alertDialog(){
+    private fun alertDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("개역 한글 성경")
         builder.setMessage("종료하실래요?")
-        builder.setPositiveButton("예"){ dialogInterface, i -> super.onBackPressed() }
-        builder.setNegativeButton("아니오"){dialogInterface, i -> }
+        builder.setPositiveButton("예") { _, _ -> super.onBackPressed() }
+        builder.setNegativeButton("아니오") { _, _ -> }
         builder.show()
     }
 }

@@ -1,7 +1,6 @@
 package com.example.bible
 
 import android.content.Context
-import android.graphics.Color
 import android.util.SparseArray
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
@@ -34,28 +33,30 @@ class MemoAdapter(
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.bind(memoList[position], memoId[position])
 
-        if (booleanArray[position]) {
-            holder.memo.setBackgroundResource(R.drawable.item_selector_choice)
-            holder.memoId.setBackgroundResource(R.drawable.item_bottom_selector_choice)
-        }
-        else {
-            holder.memo.setBackgroundResource(R.drawable.item_selector)
-            holder.memoId.setBackgroundResource(R.drawable.item_bottom_selector)
-        }
+
     }
 
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-         val memo = itemView.findViewById<TextView>(R.id.memo)
-         val memoId = itemView.findViewById<TextView>(R.id.date)
+         private val memoText = itemView.findViewById<TextView>(R.id.memo)
+         private val memoIdText = itemView.findViewById<TextView>(R.id.date)
 
         fun bind(str: String, id: String) {
             val line = str.lines().size
 
-            memo.text = str
-            memoId.text = id
-            memo.maxLines = when (line.compareTo(5)) {
+            memoText.text = str
+            memoIdText.text = id
+            memoText.maxLines = when (line.compareTo(5)) {
                 1 -> line / 2
                 else -> 5
+            }
+
+            if (booleanArray[adapterPosition]) {
+                memoText.setBackgroundResource(R.drawable.item_selector_choice)
+                memoIdText.setBackgroundResource(R.drawable.item_bottom_selector_choice)
+            }
+            else {
+                memoText.setBackgroundResource(R.drawable.item_selector)
+                memoIdText.setBackgroundResource(R.drawable.item_bottom_selector)
             }
 
             itemView.setBackgroundResource(R.color.colorLTGRAY)

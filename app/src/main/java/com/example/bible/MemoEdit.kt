@@ -96,9 +96,9 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 finish()
             }
             R.id.nav_note -> {
-                val intent = Intent(this,MemoPage::class.java)
+                /*val intent = Intent(this,MemoPage::class.java)
                 startActivity(intent)
-                finish()
+                finish()*/
             }
 
             R.id.nav_daily -> {
@@ -118,5 +118,15 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        when (drawerLayout.isDrawerOpen((GravityCompat.START))) {
+            true -> drawerLayout.closeDrawer(GravityCompat.START)
+            false -> {
+                super.onBackPressed()
+            }
+        }
     }
 }

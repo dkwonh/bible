@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -41,6 +42,23 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         textView.movementMethod = ScrollingMovementMethod()
 
         navView.setNavigationItemSelectedListener(this)
+    }
+
+    private fun deleteButton(){
+        val dbHelper = DBHelper(this)
+        id = intent.getStringExtra("ID")
+        dbHelper.deleteMemo(id.toString())
+        Toast.makeText(this,"삭제되었습니다.",Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+    private fun alertDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("메모 삭제")
+        builder.setMessage("삭제하시겠습니까?")
+        builder.setPositiveButton("예") { _, _ -> deleteButton() }
+        builder.setNegativeButton("아니오") { _, _ -> }
+        builder.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -76,11 +94,7 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 true
             }
             R.id.delete_memo -> {
-                val dbHelper = DBHelper(this)
-                id = intent.getStringExtra("ID")
-                dbHelper.deleteMemo(id.toString())
-                Toast.makeText(this,"삭제 되었습니다.",Toast.LENGTH_SHORT).show()
-                finish()
+                alertDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -98,12 +112,14 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             R.id.nav_note -> {
                 val intent = Intent(this,MemoPage::class.java)
                 startActivity(intent)
+                finish()
             }
 
             R.id.nav_daily -> {
                 val intent = Intent(this, LinePage::class.java)
                 intent.putExtra("PROVERBS","200")
                 startActivity(intent)
+                finish()
             }
 
             R.id.nav_share -> {
@@ -116,5 +132,15 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        when (drawerLayout.isDrawerOpen((GravityCompat.START))) {
+            true -> drawerLayout.closeDrawer(GravityCompat.START)
+            false -> {
+                super.onBackPressed()
+            }
+        }
     }
 }

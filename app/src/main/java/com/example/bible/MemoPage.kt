@@ -1,15 +1,14 @@
 package com.example.bible
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
-import android.util.SparseBooleanArray
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.util.containsValue
@@ -57,10 +56,7 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                     dbHelper.deleteMemo(values)
                     memoId.remove(values)
                 }
-                selectedMemo.clear()
-                memoAdapter.booleanArray.clear()
-                memoAdapter.notifyDataSetChanged()
-                changeFabImage(1)
+                alertDialog()
             } else {
                 val intent = Intent(this, MemoEdit::class.java)
                 intent.putExtra("MemoPage", "Memo")
@@ -76,9 +72,7 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 intent.putExtra("MEMO", memo)
                 intent.putExtra("ID", id)
                 startActivity(intent)
-                selectedMemo.clear()
-                memoAdapter.booleanArray.clear()
-                memoAdapter.notifyDataSetChanged()
+                selectedMemoClear()
                 changeFabImage(1)
             }
         )
@@ -124,17 +118,23 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
     }
 
+    private fun selectedMemoClear(){
+        selectedMemo.clear()
+        memoAdapter.booleanArray.clear()
+        memoAdapter.notifyDataSetChanged()
+    }
+
+    private fun deleteButton(){
+        selectedMemoClear()
+        changeFabImage(1)
+        Toast.makeText(this,"삭제 되었습니다.",Toast.LENGTH_SHORT).show()
+    }
+
     private fun changeFabImage(flag: Int) {
         when (flag) {
             0 -> fab.setImageResource(R.drawable.ic_delete_dark)
             1 -> fab.setImageResource(R.drawable.ic_notepad_dark)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        memoUpdate()
-        memoAdapter.notifyDataSetChanged()
     }
 
     private fun memoUpdate() {
@@ -148,6 +148,22 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             memoId.add(key)
         }
     }
+
+    private fun alertDialog(){
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("메모 삭제")
+            builder.setMessage("삭제하시겠습니까?")
+            builder.setPositiveButton("예") { _, _ -> deleteButton() }
+            builder.setNegativeButton("아니오") { _, _ -> }
+            builder.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        memoUpdate()
+        memoAdapter.notifyDataSetChanged()
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -176,8 +192,6 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
-
-
         }
     }
 
@@ -195,6 +209,7 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 val intent = Intent(this, LinePage::class.java)
                 intent.putExtra("PROVERBS","200")
                 startActivity(intent)
+                finish()
             }
 
             R.id.nav_share -> {
@@ -207,5 +222,15 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        when (drawerLayout.isDrawerOpen((GravityCompat.START))) {
+            true -> drawerLayout.closeDrawer(GravityCompat.START)
+            false -> {
+                super.onBackPressed()
+            }
+        }
     }
 }

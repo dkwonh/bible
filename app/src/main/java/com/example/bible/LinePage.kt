@@ -15,17 +15,20 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_linepage.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var lineAdapter: LineAdapter
-
     private val dbHelper = DBHelper(this)
     private var selectedLine = SparseArray<String>()
+    private var pageId: Int = 1
+    private var text = arrayListOf<String>()
+    private var pName = String()
+    private var pNum = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.line_page_main)
@@ -39,42 +42,30 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
+        val nextFab = findViewById<FloatingActionButton>(R.id.fab)
+        val prevFab = findViewById<FloatingActionButton>(R.id.floatingActionButton)
 
-        /*val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener {
-            if (selectedLine.isNotEmpty()) {
-                var str = ""
-                selectedLine.forEach { _, value ->
-                    str += value
-                }
-                val intent = Intent(this, MemoEdit::class.java).putExtra("MEMO", str)
-                startActivity(intent)
-
-                lineAdapter.selected.clear()
-                lineAdapter.booleanArray.clear()
-                lineAdapter.notifyDataSetChanged()
-            } else
-                Toast.makeText(this, "절을 선택하고 저장버튼을 누르시면 메모할 수 있어요", Toast.LENGTH_SHORT).show()
-        }*/
-
-
+        prevFab.setOnClickListener { prevPageUpdate() }
+        nextFab.setOnClickListener { nextPageUpdate() }
 
         recyclerView = findViewById(R.id.line_recycler)
-        val date = SimpleDateFormat("dd").format(Date())
 
-        val pageId: Int
         val id = intent.getStringExtra("PROVERBS")
         when (id is String) {
             true -> {
-                pageId = "200${date}000".toInt()
+                val date = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                if (date > 30)
+                    pageIdUpdate(200001000)
+                else
+                    pageIdUpdate("200${date}000".toInt())
             }
             else -> {
-                pageId = intent.getIntExtra("Num",1001001)
+                pageIdUpdate(intent.getIntExtra("Num", 1001001))
             }
 
         }
 
-        val text = dbHelper.getContents(pageId)
+        text = dbHelper.getContents(pageId)
         val line = intent.getIntExtra("lineNum", 1) % 1000
 
 
@@ -93,13 +84,72 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
         recyclerView.scrollToPosition(line - 1)
 
+        val bundle = intent.extras
+        pName = bundle?.getString("Part") ?: "Title"
+        pNum = bundle?.getInt("Number") ?: 1
+
+    }
+
+    private fun pageIdUpdate(i: Int) {
+        pageId = i
+    }
+
+    private fun prevPageUpdate() {
+        var temp = pageId
+        temp /= 1000
+        temp %= 1000
+
+
+        if (temp == 1)
+        else {
+            pNum -= 1
+            toolbar.title = "$pName ${pNum}장"
+            pageId /= 1000
+            pageId -= 1
+            pageId *= 1000
+            text = dbHelper.getContents(pageId)
+            lineAdapter = LineAdapter(this, text)
+            recyclerView.adapter = lineAdapter
+
+            selectedLineUpdate()
+        }
+
+    }
+
+    private fun nextPageUpdate() {
+        var temp = pageId
+
+        temp /= 1000
+        temp += 1
+        temp *= 1000
+        text = dbHelper.getContents(temp)
+        if (text.isEmpty())
+        else {
+            pNum += 1
+            pageId = temp
+            lineAdapter = LineAdapter(this, text)
+            recyclerView.adapter = lineAdapter
+            toolbar.title = "$pName ${pNum}장"
+
+            selectedLineUpdate()
+
+        }
+
+    }
+
+    private fun selectedLineUpdate(){
+        lineAdapter.selected.clear()
+        lineAdapter.booleanArray.clear()
+        selectedLine = lineAdapter.selected
+
+        lineAdapter.notifyDataSetChanged()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.line_menu_main, menu)
         toolbar.title =
-            intent.getStringExtra("TITLE") ?: "매일 매일 잠언 ${SimpleDateFormat("dd").format(Date())}장"
+            intent.getStringExtra("TITLE") ?: "매일 매일 잠언 ${Calendar.getInstance().get(Calendar.DAY_OF_MONTH)}장"
         return true
     }
 
@@ -142,9 +192,14 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             R.id.nav_note -> {
                 val intent = Intent(this, MemoPage::class.java)
                 startActivity(intent)
+                finish()
             }
 
             R.id.nav_daily -> {
+                val intent = Intent(this, LinePage::class.java)
+                intent.putExtra("PROVERBS", "200")
+                startActivity(intent)
+                finish()
             }
 
             R.id.nav_share -> {
@@ -160,4 +215,13 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         return true
     }
 
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        when (drawerLayout.isDrawerOpen((GravityCompat.START))) {
+            true -> drawerLayout.closeDrawer(GravityCompat.START)
+            false -> {
+                super.onBackPressed()
+            }
+        }
+    }
 }

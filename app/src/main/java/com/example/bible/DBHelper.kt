@@ -5,8 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
-import java.text.SimpleDateFormat
+import java.text.DateFormat
+import java.text.DateFormat.MEDIUM
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -46,7 +46,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         db.close()
         return contents
     }
-
+    /*
     fun getContent(id: Int): String {
         val db = readableDatabase
         val selectSQL = "SELECT CONTENTS FROM BIBLE WHERE id = $id"
@@ -87,7 +87,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         db.execSQL(sql)
         db.close()
 
-    }
+    }*/
 
     fun pageCalculator(partNum: Int): Int {
         val startNum = partNum * 1000000
@@ -132,10 +132,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
     fun addMemo(contents: String) {
         val db = writableDatabase
         val values = ContentValues()
-        val date = Date(System.currentTimeMillis())
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val format = DateFormat.getDateTimeInstance(MEDIUM,MEDIUM, Locale.KOREA).format(Date())
 
-        values.put("ID", simpleDateFormat.format(date))
+        values.put("ID", format)
         values.put("CONTENTS", contents)
 
         db.insert("MEMO", null, values)
@@ -166,7 +165,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
         return memo
     }
 
-    fun getAllMemoID() : ArrayList<String>{
+    /*fun getAllMemoID() : ArrayList<String>{
         val memoId = ArrayList<String>()
 
         val db = readableDatabase
@@ -188,7 +187,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "bible", null, 1) {
 
         db.delete("MEMO",null,null)
         db.close()
-    }
+    }*/
 
     fun deleteMemo(id: String) {
         val db = writableDatabase
