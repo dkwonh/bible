@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             depth = 0
             recyclerView.adapter = mAdapter
+
         }
 
         var r = 1
@@ -173,8 +174,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     intent.putExtra("lineNum", num * 1000000 + page.toInt() * 1000 + line.toInt())
                     intent.putExtra("TITLE", currentTitle)
                     val bundle = Bundle()
-                    bundle.putString("Part",currentList[menu.toInt() - 1])
-                    bundle.putInt("Number",page.toInt())
+                    bundle.putString("Part", currentList[menu.toInt() - 1])
+                    bundle.putInt("Number", page.toInt())
                     intent.putExtras(bundle)
                     startActivity(intent)
 
@@ -269,7 +270,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.close_app -> {
+                alertDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -296,13 +300,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 intent.putExtra("PROVERBS", "200")
                 startActivity(intent)
             }
-
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -313,7 +310,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val builder = AlertDialog.Builder(this)
         builder.setTitle("개역 한글 성경")
         builder.setMessage("종료하실래요?")
-        builder.setPositiveButton("예") { _, _ -> super.onBackPressed() }
+        builder.setPositiveButton("예") { _, _ -> finish() }
         builder.setNegativeButton("아니오") { _, _ -> }
         builder.show()
     }

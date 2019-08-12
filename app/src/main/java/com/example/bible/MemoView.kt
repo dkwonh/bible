@@ -12,6 +12,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
@@ -84,7 +85,10 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.close_app -> {
+                alertDialogApp()
+                true
+            }
             R.id.update_memo -> {
                 id = intent.getStringExtra("ID")
                 val intent = Intent(this, MemoEdit::class.java)
@@ -121,13 +125,6 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 startActivity(intent)
                 finish()
             }
-
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -142,5 +139,14 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 super.onBackPressed()
             }
         }
+    }
+
+    private fun alertDialogApp() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("개역 한글 성경")
+        builder.setMessage("종료하실래요?")
+        builder.setPositiveButton("예") { _, _ -> ActivityCompat.finishAffinity(this) }
+        builder.setNegativeButton("아니오") { _, _ -> }
+        builder.show()
     }
 }

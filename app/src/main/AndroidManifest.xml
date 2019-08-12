@@ -19,18 +19,22 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LinePage"
-                  android:label="bible"
-                  android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".MemoPage"
-                  android:label="메모장"
-                  android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".MemoEdit"
-                  android:label="메모장"
-                  android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".MemoView"
-                  android:label="메모장"
-                  android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".LinePage"
+                android:label="bible"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".MemoPage"
+                android:label="메모장"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".MemoEdit"
+                android:label="메모장"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".MemoView"
+                android:label="메모장"
+                android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

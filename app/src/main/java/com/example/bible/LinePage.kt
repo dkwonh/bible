@@ -7,8 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.util.forEach
 import androidx.core.util.isNotEmpty
 import androidx.core.view.GravityCompat
@@ -58,6 +60,8 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                     pageIdUpdate(200001000)
                 else
                     pageIdUpdate("200${date}000".toInt())
+                prevFab.hide()
+                nextFab.hide()
             }
             else -> {
                 pageIdUpdate(intent.getIntExtra("Num", 1001001))
@@ -137,7 +141,7 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
     }
 
-    private fun selectedLineUpdate(){
+    private fun selectedLineUpdate() {
         lineAdapter.selected.clear()
         lineAdapter.booleanArray.clear()
         selectedLine = lineAdapter.selected
@@ -158,7 +162,10 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.close_app ->{
+                alertDialog()
+                true
+            }
             R.id.save_memo -> {
                 if (selectedLine.isNotEmpty()) {
                     var str = ""
@@ -196,17 +203,13 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             }
 
             R.id.nav_daily -> {
-                val intent = Intent(this, LinePage::class.java)
-                intent.putExtra("PROVERBS", "200")
-                startActivity(intent)
-                finish()
-            }
-
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
+                if(intent.getStringExtra("PROVERBS") is String)
+                else {
+                    val intent = Intent(this, LinePage::class.java)
+                    intent.putExtra("PROVERBS", "200")
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
 
@@ -223,5 +226,14 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 super.onBackPressed()
             }
         }
+    }
+
+    private fun alertDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("개역 한글 성경")
+        builder.setMessage("종료하실래요?")
+        builder.setPositiveButton("예") { _, _ -> ActivityCompat.finishAffinity(this) }
+        builder.setNegativeButton("아니오") { _, _ -> }
+        builder.show()
     }
 }

@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.util.containsValue
 import androidx.core.util.forEach
 import androidx.core.util.isNotEmpty
@@ -93,7 +95,7 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 memoText.setBackgroundResource(R.drawable.item_selector_choice)
                 dateText.setBackgroundResource(R.drawable.item_bottom_selector_choice)
             }
-            if(!memoAdapter.booleanArray.containsValue(true))
+            if (!memoAdapter.booleanArray.containsValue(true))
                 changeFabImage(1)
             else
                 changeFabImage(0)
@@ -115,19 +117,18 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
         navView.setNavigationItemSelectedListener(this)
 
-
     }
 
-    private fun selectedMemoClear(){
+    private fun selectedMemoClear() {
         selectedMemo.clear()
         memoAdapter.booleanArray.clear()
         memoAdapter.notifyDataSetChanged()
     }
 
-    private fun deleteButton(){
+    private fun deleteButton() {
         selectedMemoClear()
         changeFabImage(1)
-        Toast.makeText(this,"삭제 되었습니다.",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "삭제 되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
     private fun changeFabImage(flag: Int) {
@@ -147,15 +148,20 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             memo.add(treeMap[key].toString())
             memoId.add(key)
         }
+        val v = findViewById<TextView>(R.id.memo_serve)
+        when(memo.isEmpty()){
+            true -> v.visibility = View.VISIBLE
+            false -> v.visibility = View.INVISIBLE}
+
     }
 
-    private fun alertDialog(){
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("메모 삭제")
-            builder.setMessage("삭제하시겠습니까?")
-            builder.setPositiveButton("예") { _, _ -> deleteButton() }
-            builder.setNegativeButton("아니오") { _, _ -> }
-            builder.show()
+    private fun alertDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("메모 삭제")
+        builder.setMessage("삭제하시겠습니까?")
+        builder.setPositiveButton("예") { _, _ -> deleteButton() }
+        builder.setNegativeButton("아니오") { _, _ -> }
+        builder.show()
     }
 
     override fun onResume() {
@@ -190,7 +196,10 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.close_app -> {
+                alertDialogApp()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -207,17 +216,11 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
             R.id.nav_daily -> {
                 val intent = Intent(this, LinePage::class.java)
-                intent.putExtra("PROVERBS","200")
+                intent.putExtra("PROVERBS", "200")
                 startActivity(intent)
                 finish()
             }
 
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -232,5 +235,14 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 super.onBackPressed()
             }
         }
+    }
+
+    private fun alertDialogApp() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("개역 한글 성경")
+        builder.setMessage("종료하실래요?")
+        builder.setPositiveButton("예") { _, _ -> ActivityCompat.finishAffinity(this) }
+        builder.setNegativeButton("아니오") { _, _ -> }
+        builder.show()
     }
 }
