@@ -20,6 +20,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import java.util.*
@@ -35,6 +37,8 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     private val memo = arrayListOf<String>()
     private val memoId = arrayListOf<String>()
     private lateinit var fab: FloatingActionButton
+    private lateinit var mAdView : AdView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,6 +121,10 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
 
         navView.setNavigationItemSelectedListener(this)
 
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
     }
 
     private fun selectedMemoClear() {
@@ -153,6 +161,10 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             true -> v.visibility = View.VISIBLE
             false -> v.visibility = View.INVISIBLE}
 
+    }
+    private fun dialog(){
+        val exitDialog = ExitDialog(this)
+        exitDialog.show()
     }
 
     private fun alertDialog() {
@@ -197,7 +209,7 @@ class MemoPage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.close_app -> {
-                alertDialogApp()
+                dialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)

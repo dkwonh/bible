@@ -15,11 +15,14 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.navigation.NavigationView
 
 class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var str: String? = null
     private var id: String? = null
+    private lateinit var mAdView : AdView
     private lateinit var textView: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +46,10 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         textView.movementMethod = ScrollingMovementMethod()
 
         navView.setNavigationItemSelectedListener(this)
+
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
     }
 
     private fun deleteButton(){
@@ -86,7 +93,7 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.close_app -> {
-                alertDialogApp()
+                dialog()
                 true
             }
             R.id.update_memo -> {
@@ -140,13 +147,10 @@ class MemoView : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             }
         }
     }
-
-    private fun alertDialogApp() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("개역 한글 성경")
-        builder.setMessage("종료하실래요?")
-        builder.setPositiveButton("예") { _, _ -> ActivityCompat.finishAffinity(this) }
-        builder.setNegativeButton("아니오") { _, _ -> }
-        builder.show()
+    private fun dialog(){
+        val exitDialog = ExitDialog(this)
+        exitDialog.show()
     }
+
+
 }

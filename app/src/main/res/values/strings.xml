@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">bible</string>
+    <string name="app_name">성경</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">읽기 쉬운 성경</string>
+    <string name="nav_header_title">개역 한글 성경</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">환경 설정</string>
@@ -13,6 +13,9 @@
     <string name="proverbs">매일매일 잠언</string>
     <string name="delete_memo">삭제</string>
     <string name="memo_serve">우측 하단 버튼을 눌러"\n" 메모를 작성하세요</string>
+    <string name="exit">종료</string>
+    <string name="cancel">취소</string>
+    <string name="exit_answer">종료하시겠습니까?</string>
 
     <string name="menu_home">성경읽기</string>
     <string name="menu_gallery">Gallery</string>

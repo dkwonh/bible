@@ -25,30 +25,5 @@
 
     <include layout="@layout/content_linepage"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_next"
-            app:elevation="0sp"
-            app:borderWidth="0dp"
-            app:pressedTranslationZ="0dp"
-            android:theme="@style/floatingActionBar"
 
-    />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_prev"
-            android:id="@+id/floatingActionButton"
-            app:elevation="0dp"
-            app:borderWidth="0dp"
-            app:pressedTranslationZ="0dp"
-            android:theme="@style/floatingActionBar"
-            />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

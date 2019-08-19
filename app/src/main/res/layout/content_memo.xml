@@ -14,13 +14,23 @@
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:id="@+id/recycler_memo"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"/>
+            app:layout_constrainedHeight="true" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/adView" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
+    <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            ads:layout_constraintBottom_toBottomOf="parent">
+    </com.google.android.gms.ads.AdView>
     <TextView android:layout_width="match_parent" android:layout_height="match_parent"
               android:gravity="center"
               android:text="@string/memo_serve"
@@ -28,4 +38,15 @@
               android:id="@+id/memo_serve"
               android:padding="@dimen/fab_margin"
               android:visibility="invisible"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            app:elevation="0dp"
+            app:borderWidth="0dp"
+            app:pressedTranslationZ="0dp"
+            app:srcCompat="@drawable/ic_notepad_dark" app:layout_constraintBottom_toBottomOf="@id/recycler_memo"
+            app:layout_constraintEnd_toEndOf="@id/recycler_memo"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,6 +14,9 @@ import android.view.Menu
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.app_bar_main.*
 import java.io.FileOutputStream
 
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var pageAdapter: MenuAdapter
     private lateinit var lineAdapter: MenuAdapter
     private lateinit var recyclerView: RecyclerView
+    lateinit var mAdView : AdView
     private val dbHelper = DBHelper(this)
     private var currentList = arrayListOf<String>()
     private var menuList = arrayListOf<String>()
@@ -194,6 +198,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         toolbar.title = currentTitle
 
+        //테스트
+        MobileAds.initialize(this,"ca-app-pub-3940256099942544~3347511713")
+
+        mAdView = findViewById(R.id.adView)
+        val request = AdRequest.Builder().build()
+        mAdView.loadAd(request)
+
     }
 
     override fun onBackPressed() {
@@ -219,7 +230,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         toolbar.title = currentTitle.replace("""[0-9].*${'$'}""".toRegex(), "")
                     }
                     else -> {
-                        alertDialog()
+                        dialog()
                     }
                 }
             }
@@ -271,7 +282,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.close_app -> {
-                alertDialog()
+                dialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -304,6 +315,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun dialog(){
+        val exitDialog = ExitDialog(this)
+        exitDialog.show()
     }
 
     private fun alertDialog() {

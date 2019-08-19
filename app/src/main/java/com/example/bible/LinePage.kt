@@ -17,6 +17,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_linepage.*
@@ -25,6 +27,7 @@ import java.util.*
 class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var lineAdapter: LineAdapter
+    private lateinit var mAdView : AdView
     private val dbHelper = DBHelper(this)
     private var selectedLine = SparseArray<String>()
     private var pageId: Int = 1
@@ -44,11 +47,11 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
 
-        val nextFab = findViewById<FloatingActionButton>(R.id.fab)
+        /*val nextFab = findViewById<FloatingActionButton>(R.id.fab)
         val prevFab = findViewById<FloatingActionButton>(R.id.floatingActionButton)
 
         prevFab.setOnClickListener { prevPageUpdate() }
-        nextFab.setOnClickListener { nextPageUpdate() }
+        nextFab.setOnClickListener { nextPageUpdate() }*/
 
         recyclerView = findViewById(R.id.line_recycler)
 
@@ -60,8 +63,8 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                     pageIdUpdate(200001000)
                 else
                     pageIdUpdate("200${date}000".toInt())
-                prevFab.hide()
-                nextFab.hide()
+                /*prevFab.hide()
+                nextFab.hide()*/
             }
             else -> {
                 pageIdUpdate(intent.getIntExtra("Num", 1001001))
@@ -91,6 +94,10 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         val bundle = intent.extras
         pName = bundle?.getString("Part") ?: "Title"
         pNum = bundle?.getInt("Number") ?: 1
+
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
 
     }
 
@@ -163,7 +170,7 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.close_app ->{
-                alertDialog()
+                dialog()
                 true
             }
             R.id.save_memo -> {
@@ -226,6 +233,11 @@ class LinePage : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 super.onBackPressed()
             }
         }
+    }
+
+    private fun dialog(){
+        val exitDialog = ExitDialog(this)
+        exitDialog.show()
     }
 
     private fun alertDialog() {

@@ -61,7 +61,7 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.close_app -> {
-                alertDialog()
+                dialog()
                 true
             }
             R.id.save_memo -> {
@@ -126,6 +126,11 @@ class MemoEdit : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLis
                 super.onBackPressed()
             }
         }
+    }
+
+    private fun dialog(){
+        val exitDialog = ExitDialog(this)
+        exitDialog.show()
     }
 
     private fun alertDialog() {
