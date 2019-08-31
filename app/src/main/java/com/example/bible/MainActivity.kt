@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var pageAdapter: MenuAdapter
     private lateinit var lineAdapter: MenuAdapter
     private lateinit var recyclerView: RecyclerView
-    lateinit var mAdView : AdView
+    private lateinit var mAdView : AdView
     private val dbHelper = DBHelper(this)
     private var currentList = arrayListOf<String>()
     private var menuList = arrayListOf<String>()
